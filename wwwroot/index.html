@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Movie Oscars Archive</title>
+    <style>
+        :root {
+            --paper: #efe6d6;
+            --paper-deep: #e3d5bc;
+            --ink: #17130f;
+            --muted: #5a4f43;
+            --accent: #7a1f1e;
+            --gold: #9a7441;
+            --rule: rgba(23, 19, 15, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--ink);
+            background:
+                linear-gradient(rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08)),
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(23, 19, 15, 0.012) 0,
+                    rgba(23, 19, 15, 0.012) 1px,
+                    transparent 1px,
+                    transparent 5px
+                ),
+                linear-gradient(180deg, #ddd0b8, #efe6d6 22%, #eadfcf 100%);
+            font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+        }
+
+        .page {
+            width: min(1180px, calc(100% - 32px));
+            margin: 18px auto;
+            border: 1px solid rgba(23, 19, 15, 0.3);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.08));
+            box-shadow: 0 12px 40px rgba(49, 34, 18, 0.14);
+        }
+
+        .masthead {
+            padding: 18px 24px 14px;
+            border-bottom: 1px solid var(--rule);
+            text-align: center;
+        }
+
+        .kicker {
+            font-family: "Trebuchet MS", sans-serif;
+            font-size: 0.72rem;
+            letter-spacing: 0.26em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .title {
+            margin: 10px 0 6px;
+            font-size: clamp(2.4rem, 6vw, 5.4rem);
+            line-height: 0.92;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            margin: 0;
+            color: var(--muted);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .topbar {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 16px;
+            padding: 12px 24px;
+            border-bottom: 3px double var(--rule);
+            font-family: "Trebuchet MS", sans-serif;
+            font-size: 0.84rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        .topbar div:last-child {
+            text-align: right;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .lead-story {
+            padding: 28px 24px 30px;
+            border-right: 1px solid var(--rule);
+        }
+
+        .lead-label {
+            display: inline-block;
+            margin-bottom: 14px;
+            padding-bottom: 4px;
+            border-bottom: 2px solid var(--accent);
+            font-family: "Trebuchet MS", sans-serif;
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .lead-story h2 {
+            margin: 0 0 14px;
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            line-height: 0.97;
+            letter-spacing: -0.04em;
+        }
+
+        .lead-story p {
+            margin: 0 0 18px;
+            max-width: 680px;
+            color: var(--muted);
+            font-size: 1.04rem;
+            line-height: 1.8;
+        }
+
+        .hero-links {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            font-family: "Trebuchet MS", sans-serif;
+            font-size: 0.84rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .hero-links a {
+            color: var(--ink);
+            text-decoration: none;
+            border-bottom: 1px solid var(--ink);
+            padding-bottom: 2px;
+        }
+
+        .hero-links a:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .spotlight {
+            padding: 28px 24px 30px;
+            background:
+                linear-gradient(180deg, rgba(154, 116, 65, 0.1), transparent),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.05));
+        }
+
+        .spotlight-title {
+            margin: 0 0 14px;
+            font-family: "Trebuchet MS", sans-serif;
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .quote {
+            margin: 0;
+            font-size: 1.55rem;
+            line-height: 1.35;
+        }
+
+        .quote strong {
+            display: block;
+            margin-top: 14px;
+            font-family: "Trebuchet MS", sans-serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1.5fr 0.9fr;
+        }
+
+        .main-column {
+            border-right: 1px solid var(--rule);
+        }
+
+        .section-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 14px 24px;
+            border-bottom: 1px solid var(--rule);
+            font-family: "Trebuchet MS", sans-serif;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+        }
+
+        .movie-list {
+            padding: 0 24px 24px;
+        }
+
+        .movie-item {
+            display: grid;
+            grid-template-columns: 72px 1fr;
+            gap: 18px;
+            padding: 22px 0;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .movie-number {
+            font-size: 2.3rem;
+            line-height: 1;
+            color: var(--gold);
+        }
+
+        .movie-item h3 {
+            margin: 0 0 8px;
+            font-size: 1.9rem;
+            line-height: 1;
+            letter-spacing: -0.03em;
+        }
+
+        .movie-meta {
+            margin: 0 0 10px;
+            font-family: "Trebuchet MS", sans-serif;
+            color: var(--muted);
+            font-size: 0.86rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .movie-copy {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.75;
+        }
+
+        .facts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 16px;
+            margin-top: 12px;
+            font-family: "Trebuchet MS", sans-serif;
+            font-size: 0.82rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .facts span {
+            color: var(--ink);
+        }
+
+        .side-column {
+            display: grid;
+            grid-template-rows: auto auto 1fr;
+        }
+
+        .side-block {
+            padding: 18px 24px 24px;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .side-block h3 {
+            margin: 0 0 14px;
+            font-family: "Trebuchet MS", sans-serif;
+            font-size: 0.82rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .stat {
+            padding-top: 12px;
+            border-top: 2px solid var(--ink);
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 2.2rem;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .stat span {
+            color: var(--muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .note-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .note {
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .note:last-child {
+            border-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .note strong {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 1.08rem;
+        }
+
+        .note p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .empty {
+            padding: 24px 0;
+            color: var(--muted);
+            line-height: 1.8;
+        }
+
+        @media (max-width: 920px) {
+            .hero,
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            .lead-story,
+            .main-column {
+                border-right: 0;
+            }
+
+            .lead-story {
+                border-bottom: 1px solid var(--rule);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .page {
+                width: calc(100% - 12px);
+                margin: 6px auto;
+            }
+
+            .masthead,
+            .topbar,
+            .lead-story,
+            .spotlight,
+            .section-head,
+            .movie-list,
+            .side-block {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .topbar {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .topbar div:last-child {
+                text-align: center;
+            }
+
+            .movie-item {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <header class="masthead">
+            <div class="kicker">Movie Oscars API Edition</div>
+            <h1 class="title">The Oscar Archive</h1>
+            <p class="subtitle">A film-journal style front page powered by ASP.NET Core and SQLite backend.</p>
+        </header>
+
+        <section class="topbar">
+
+            <div><a href="/swagger" style="color:inherit; text-decoration:none;">Open Swagger</a></div>
+        </section>
+
+        <section class="hero">
+            <article class="lead-story">
+                <div class="lead-label">Lead Story</div>
+                <h2>The films, the wins and the history.</h2>
+                <p>
+                    This homepage pulls directly from `Movies` endpoint and presents the collection more like
+                    a print film review than a startup landing page.
+                </p>
+                <div class="hero-links">
+                    <a href="/api/Movies">Read The JSON</a>
+                    <a href="/swagger">Test The API</a>
+                </div>
+            </article>
+
+            <aside class="spotlight" id="spotlight">
+                <div class="spotlight-title">Editor’s Spotlight</div>
+                <p class="quote">Loading featured title...</p>
+            </aside>
+        </section>
+
+        <section class="content">
+            <section class="main-column">
+                <div class="section-head">
+                    <span>Archive Ranking</span>
+                    <span id="movie-count">Loading</span>
+                </div>
+                <div class="movie-list" id="movie-list">
+                    <div class="empty">Loading the collection...</div>
+                </div>
+            </section>
+
+            <aside class="side-column">
+                <section class="side-block">
+                    <h3>By The Numbers</h3>
+                    <div class="stats-grid">
+                        <div class="stat">
+                            <strong id="total-movies">0</strong>
+                            <span>Total films</span>
+                        </div>
+                        <div class="stat">
+                            <strong id="best-picture-count">0</strong>
+                            <span>Best Picture winners</span>
+                        </div>
+                        <div class="stat">
+                            <strong id="total-wins">0</strong>
+                            <span>Oscar wins</span>
+                        </div>
+                        <div class="stat">
+                            <strong id="top-year">-</strong>
+                            <span>Newest release year</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="side-block">
+                    <h3>Notebook</h3>
+                    <div class="note-list" id="highlights">
+                        <div class="empty">Waiting for archive notes...</div>
+                    </div>
+                </section>
+            </aside>
+        </section>
+    </main>
+
+    <script>
+        async function loadMovies() {
+            const movieList = document.getElementById("movie-list");
+            const highlights = document.getElementById("highlights");
+            const spotlight = document.getElementById("spotlight");
+            const movieCount = document.getElementById("movie-count");
+
+            try {
+                const response = await fetch("/api/Movies");
+                if (!response.ok) {
+                    throw new Error("Request failed");
+                }
+
+                const movies = await response.json();
+                renderMovies(movies, movieList, movieCount);
+                renderHighlights(movies, highlights);
+                renderSpotlight(movies, spotlight);
+                renderStats(movies);
+            } catch (error) {
+                movieList.innerHTML = "<div class=\"empty\">The archive could not load. Make sure the API is running and refresh the page.</div>";
+                highlights.innerHTML = "<div class=\"empty\">No notes yet because the data request did not complete.</div>";
+                spotlight.innerHTML = "<div class=\"spotlight-title\">Editor’s Spotlight</div><p class=\"quote\">The featured story is temporarily unavailable.</p>";
+                movieCount.textContent = "Unavailable";
+            }
+        }
+
+        function renderMovies(movies, container, label) {
+            if (!movies.length) {
+                container.innerHTML = "<div class=\"empty\">No films yet. Add one in Swagger and it will appear here.</div>";
+                label.textContent = "0 titles";
+                return;
+            }
+
+            const ranked = [...movies].sort((a, b) => b.oscarWins - a.oscarWins || b.oscarNominations - a.oscarNominations || b.releaseYear - a.releaseYear);
+            label.textContent = `${ranked.length} titles`;
+
+            container.innerHTML = ranked.map((movie, index) => `
+                <article class="movie-item">
+                    <div class="movie-number">${String(index + 1).padStart(2, "0")}</div>
+                    <div>
+                        <h3>${escapeHtml(movie.title)}</h3>
+                        <p class="movie-meta">${escapeHtml(movie.director)} / ${movie.releaseYear} / ${escapeHtml(movie.genre)}</p>
+                        <p class="movie-copy">
+                            ${escapeHtml(movie.title)} collected ${movie.oscarNominations} nominations and ${movie.oscarWins} wins${movie.bestPictureWinner ? ", including Best Picture." : "."}
+                        </p>
+                        <div class="facts">
+                            <span>${movie.oscarNominations} nominations</span>
+                            <span>${movie.oscarWins} wins</span>
+                            ${movie.bestPictureWinner ? "<span>Best Picture winner</span>" : ""}
+                        </div>
+                    </div>
+                </article>
+            `).join("");
+        }
+
+        function renderStats(movies) {
+            document.getElementById("total-movies").textContent = movies.length;
+            document.getElementById("best-picture-count").textContent = movies.filter(movie => movie.bestPictureWinner).length;
+            document.getElementById("total-wins").textContent = movies.reduce((sum, movie) => sum + movie.oscarWins, 0);
+            document.getElementById("top-year").textContent = movies.length ? Math.max(...movies.map(movie => movie.releaseYear)) : "-";
+        }
+
+        function renderHighlights(movies, container) {
+            if (!movies.length) {
+                container.innerHTML = "<div class=\"empty\">Archive notes will appear once movies are added.</div>";
+                return;
+            }
+
+            const mostWins = [...movies].sort((a, b) => b.oscarWins - a.oscarWins)[0];
+            const mostNominations = [...movies].sort((a, b) => b.oscarNominations - a.oscarNominations)[0];
+            const latestWinner = [...movies].filter(movie => movie.bestPictureWinner).sort((a, b) => b.releaseYear - a.releaseYear)[0];
+
+            const items = [
+                {
+                    title: "Most decorated",
+                    text: `${mostWins.title} currently leads the archive with ${mostWins.oscarWins} wins.`
+                },
+                {
+                    title: "Most nominated",
+                    text: `${mostNominations.title} reached ${mostNominations.oscarNominations} nominations.`
+                },
+                {
+                    title: "Latest Best Picture",
+                    text: latestWinner ? `${latestWinner.title} is the newest Best Picture winner in the archive.` : "No Best Picture winners are listed yet."
+                }
+            ];
+
+            container.innerHTML = items.map(item => `
+                <article class="note">
+                    <strong>${escapeHtml(item.title)}</strong>
+                    <p>${escapeHtml(item.text)}</p>
+                </article>
+            `).join("");
+        }
+
+        function renderSpotlight(movies, container) {
+            if (!movies.length) {
+                container.innerHTML = "<div class=\"spotlight-title\">Editor’s Spotlight</div><p class=\"quote\">No featured title yet.</p>";
+                return;
+            }
+
+            const featured = [...movies].sort((a, b) => b.oscarWins - a.oscarWins || b.releaseYear - a.releaseYear)[0];
+
+            container.innerHTML = `
+                <div class="spotlight-title">Editor’s Spotlight</div>
+                <p class="quote">
+                    "${escapeHtml(featured.title)}" stands at the center of this collection with ${featured.oscarWins} Oscar wins and a release year of ${featured.releaseYear}.
+                    <strong>${escapeHtml(featured.director)}</strong>
+                </p>
+            `;
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll("\"", "&quot;")
+                .replaceAll("'", "&#39;");
+        }
+
+        loadMovies();
+    </script>
+</body>
+</html>
