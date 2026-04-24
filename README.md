@@ -95,9 +95,3 @@ If you use the HTTPS launch profile, the app also runs on:
 - If you created the SQLite database before adding migrations, delete `movieoscars.db` once and run `dotnet ef database update` again.
 - The app seeds sample movies only when the `Movies` table is empty.
 
-## Next Ideas
-
-- Add validation error responses
-- Add actors and directors with relationships
-- Add movie details pages on the frontend
-- Add search and filtering
